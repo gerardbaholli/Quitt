@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { useWorkTime } from "./hooks/useWorkTime";
 import { BlockGrid } from "./components/BlockGrid";
 import { SetupScreen } from "./components/SetupScreen";
-import { type Countdown, type WorkPhase, formatCountdown } from "./utils/timeUtils";
+import { type Countdown, type SlotCountdown, type WorkPhase, formatCountdown } from "./utils/timeUtils";
 import { loadPalette, savePalette } from "./utils/palette";
 import settingsIcon from "./assets/settings.svg";
 import "./App.css";
@@ -17,8 +17,21 @@ function getTimer(phase: WorkPhase, countdown: Countdown | null): { value: strin
   return { value: phase === "day-off" ? "Giorno libero" : "Giornata finita", label: "" };
 }
 
+const SLOT_NAMES: Partial<Record<WorkPhase, string>> = {
+  "before-work": "Inizio",
+  morning: "Mattina",
+  "lunch-break": "Pranzo",
+  afternoon: "Pomeriggio",
+};
+
+/** Tab title: current slot and time left until it ends, e.g. "Mattina · 1:32:18" */
+function getTitle(slot: SlotCountdown | null): string {
+  return slot ? `${SLOT_NAMES[slot.phase]} · ${formatCountdown(slot.seconds)}` : "Quitt";
+}
+
 function App() {
-  const { schedule, isConfigured, elapsedMinutes, phase, countdown, currentSeconds, updateSchedule } = useWorkTime();
+  const { schedule, isConfigured, elapsedMinutes, phase, countdown, slotCountdown, currentSeconds, updateSchedule } =
+    useWorkTime();
   const [setupOpen, setSetupOpen] = useState(!isConfigured);
   const [palette, setPalette] = useState(loadPalette);
   const timer = getTimer(phase, countdown);
@@ -29,9 +42,10 @@ function App() {
     document.documentElement.dataset.palette = palette;
   }, [palette]);
 
+  const title = getTitle(slotCountdown);
   useEffect(() => {
-    document.title = `${timer.value} ${timer.label}`.trim();
-  }, [timer.value, timer.label]);
+    document.title = title;
+  }, [title]);
 
   return (
     <>

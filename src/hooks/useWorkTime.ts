@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   type Countdown,
+  type SlotCountdown,
   type WorkSchedule,
   type WorkPhase,
   DEFAULT_SCHEDULE,
@@ -9,6 +10,7 @@ import {
   getElapsedWorkMinutes,
   getCurrentPhase,
   getCountdown,
+  getSlotCountdown,
 } from "../utils/timeUtils";
 
 export interface WorkTimeState {
@@ -18,6 +20,8 @@ export interface WorkTimeState {
   elapsedMinutes: number;
   phase: WorkPhase;
   countdown: Countdown | null;
+  /** Time left in the current slot (before work, morning, lunch, afternoon) */
+  slotCountdown: SlotCountdown | null;
   currentSeconds: number;
   updateSchedule: (schedule: WorkSchedule) => void;
 }
@@ -43,6 +47,7 @@ export function useWorkTime(): WorkTimeState {
     elapsedMinutes: getElapsedWorkMinutes(now, schedule),
     phase: getCurrentPhase(now, schedule),
     countdown: getCountdown(now, schedule),
+    slotCountdown: getSlotCountdown(now, schedule),
     currentSeconds: now.getSeconds(),
     updateSchedule,
   };

@@ -6,6 +6,7 @@ import {
   isValidSchedule,
   getCurrentPhase,
   getCountdown,
+  getSlotCountdown,
   getElapsedWorkMinutes,
   formatCountdown,
   minutesToTime,
@@ -49,6 +50,15 @@ test("getCountdown: to lunch in the morning, to end from lunch on", () => {
   assert.deepEqual(getCountdown(at(17, 0, 1), DEFAULT_SCHEDULE), { to: "end", seconds: 3599 });
   assert.equal(getCountdown(at(18, 0), DEFAULT_SCHEDULE), null);
   assert.equal(getCountdown(at(10, 0, 0, 10), DEFAULT_SCHEDULE), null);
+});
+
+test("getSlotCountdown: time left in the current slot", () => {
+  assert.deepEqual(getSlotCountdown(at(8, 30), DEFAULT_SCHEDULE), { phase: "before-work", seconds: 1800 });
+  assert.deepEqual(getSlotCountdown(at(12, 59, 30), DEFAULT_SCHEDULE), { phase: "morning", seconds: 30 });
+  assert.deepEqual(getSlotCountdown(at(13, 40), DEFAULT_SCHEDULE), { phase: "lunch-break", seconds: 1200 });
+  assert.deepEqual(getSlotCountdown(at(17, 0, 1), DEFAULT_SCHEDULE), { phase: "afternoon", seconds: 3599 });
+  assert.equal(getSlotCountdown(at(18, 0), DEFAULT_SCHEDULE), null);
+  assert.equal(getSlotCountdown(at(10, 0, 0, 10), DEFAULT_SCHEDULE), null);
 });
 
 test("formatting", () => {

@@ -20,6 +20,11 @@ export interface Countdown {
   seconds: number;
 }
 
+export interface SlotCountdown {
+  phase: WorkPhase;
+  seconds: number;
+}
+
 export const DEFAULT_SCHEDULE: WorkSchedule = {
   start: "09:00",
   lunchStart: "13:00",
@@ -106,8 +111,25 @@ export function getCountdown(now: Date, schedule: WorkSchedule): Countdown | nul
   const { morning, afternoon } = getPeriods(schedule);
   const to = phase === "before-work" || phase === "morning" ? "lunch" : "end";
   const target = (to === "lunch" ? morning.end : afternoon.end) * 60;
-  const nowSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  return { to, seconds: target - nowSeconds };
+  return { to, seconds: target - secondsOfDay(now) };
+}
+
+/** Clock time left until the end of the current slot (before work, morning, lunch, afternoon); null when none */
+export function getSlotCountdown(now: Date, schedule: WorkSchedule): SlotCountdown | null {
+  const phase = getCurrentPhase(now, schedule);
+  const { morning, afternoon } = getPeriods(schedule);
+  const slotEnd: Partial<Record<WorkPhase, number>> = {
+    "before-work": morning.start,
+    morning: morning.end,
+    "lunch-break": afternoon.start,
+    afternoon: afternoon.end,
+  };
+  const end = slotEnd[phase];
+  return end === undefined ? null : { phase, seconds: end * 60 - secondsOfDay(now) };
+}
+
+function secondsOfDay(now: Date): number {
+  return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 }
 
 /** Convert the old { morning, afternoon } format saved by previous versions */

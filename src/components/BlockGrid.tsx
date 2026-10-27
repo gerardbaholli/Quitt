@@ -1,137 +1,82 @@
-import { useMemo } from "react";
-import {
-  type WorkSchedule,
-  getTimeForMinuteIndex,
-  getTotalWorkMinutes,
-  timeToMinutes,
-} from "../utils/timeUtils";
+import { Fragment, useMemo } from "react";
+import { type WorkSchedule, getPeriods, minutesToTime } from "../utils/timeUtils";
 import "./BlockGrid.css";
 
 interface BlockGridProps {
   schedule: WorkSchedule;
   elapsedMinutes: number;
-  remainingMinutes: number;
+  /** Work-minute index currently in progress, -1 outside work hours */
+  currentIndex: number;
   currentSeconds: number;
+  /** Big text in the middle timer, e.g. "1:32:18" */
+  timerValue: string;
+  /** Small text under it, e.g. "alla pausa pranzo" */
+  timerLabel: string;
 }
 
 interface RowData {
-  label: string;
-  endLabel: string;
-  minutes: { index: number; time: string; isElapsed: boolean; hue: number }[];
+  startMinute: number;
+  firstIndex: number;
+  count: number;
+  isAfternoonStart: boolean;
 }
 
-export function BlockGrid({ schedule, elapsedMinutes, remainingMinutes, currentSeconds }: BlockGridProps) {
-  const totalMinutes = getTotalWorkMinutes(schedule);
-  const morningDuration =
-    timeToMinutes(schedule.morning.end) - timeToMinutes(schedule.morning.start);
-  const afternoonDuration =
-    timeToMinutes(schedule.afternoon.end) -
-    timeToMinutes(schedule.afternoon.start);
-
-  const rows = useMemo(() => {
+export function BlockGrid({ schedule, elapsedMinutes, currentIndex, currentSeconds, timerValue, timerLabel }: BlockGridProps) {
+  // Split each work period into rows of up to 60 blocks (one per minute)
+  const { rows, total } = useMemo(() => {
     const result: RowData[] = [];
+    const { morning, afternoon } = getPeriods(schedule);
+    let index = 0;
 
-    // Morning rows (60 blocks each)
-    for (let row = 0; row < Math.ceil(morningDuration / 60); row++) {
-      const startIdx = row * 60;
-      const endIdx = Math.min(startIdx + 60, morningDuration);
-      const hourStart = timeToMinutes(schedule.morning.start) + startIdx;
-      const h = Math.floor(hourStart / 60);
-      const minutes: RowData["minutes"] = [];
-
-      for (let i = startIdx; i < endIdx; i++) {
-        minutes.push({
-          index: i,
-          time: getTimeForMinuteIndex(i, schedule),
-          isElapsed: i < elapsedMinutes,
-          hue: 120 + (i / (totalMinutes - 1)) * 120,
-        });
+    [morning, afternoon].forEach(({ start, end }, p) => {
+      for (let s = start; s < end; s += 60) {
+        const count = Math.min(60, end - s);
+        result.push({ startMinute: s, firstIndex: index, count, isAfternoonStart: p === 1 && s === start });
+        index += count;
       }
+    });
 
-      const endH = h + 1;
-      result.push({
-        label: `${h.toString().padStart(2, "0")}:00`,
-        endLabel: `${endH.toString().padStart(2, "0")}:00`,
-        minutes,
-      });
-    }
-
-    // Afternoon rows (60 blocks each)
-    for (let row = 0; row < Math.ceil(afternoonDuration / 60); row++) {
-      const startIdx = row * 60;
-      const endIdx = Math.min(startIdx + 60, afternoonDuration);
-      const globalIdx = morningDuration + startIdx;
-      const hourStart = timeToMinutes(schedule.afternoon.start) + startIdx;
-      const h = Math.floor(hourStart / 60);
-      const minutes: RowData["minutes"] = [];
-
-      for (let i = 0; i < endIdx - startIdx; i++) {
-        const gi = globalIdx + i;
-        minutes.push({
-          index: gi,
-          time: getTimeForMinuteIndex(gi, schedule),
-          isElapsed: gi < elapsedMinutes,
-          hue: 120 + (gi / (totalMinutes - 1)) * 120,
-        });
-      }
-
-      const endH = h + 1;
-      result.push({
-        label: `${h.toString().padStart(2, "0")}:00`,
-        endLabel: `${endH.toString().padStart(2, "0")}:00`,
-        minutes,
-      });
-    }
-
-    return result;
-  }, [
-    schedule,
-    morningDuration,
-    afternoonDuration,
-    totalMinutes,
-    elapsedMinutes,
-  ]);
-
-  const morningRowCount = Math.ceil(morningDuration / 60);
+    return { rows: result, total: index };
+  }, [schedule]);
 
   return (
     <div className="block-grid">
-      {rows.map((row, rowIdx) => (
-        <>
-          {rowIdx === morningRowCount && (
-            <div key="lunch" className="lunch-separator">
-              <span className="lunch-separator-text">
-                {Math.floor(remainingMinutes / 60)}h {remainingMinutes % 60}m rimanenti
-              </span>
+      {rows.map((row) => (
+        <Fragment key={row.firstIndex}>
+          {row.isAfternoonStart && (
+            <div className="block-timer">
+              <span className="block-timer-value">{timerValue}</span>
+              {timerLabel && <span className="block-timer-label">{timerLabel}</span>}
+              <div className="block-timer-bar">
+                <div style={{ width: `${(elapsedMinutes / total) * 100}%` }} />
+              </div>
             </div>
           )}
-          <div key={rowIdx} className="block-row">
-            <span className="block-row-label block-row-label-left">
-              {row.label}
-            </span>
+          <div className="block-row">
+            <span className="block-row-label">{minutesToTime(row.startMinute)}</span>
             <div className="block-row-blocks">
-              {row.minutes.map((block, i) => (
-                <div
-                  key={i}
-                  className={`block ${block.isElapsed ? "block-elapsed" : block.index === elapsedMinutes ? "block-current" : "block-active"}`}
-                  style={
-                    block.isElapsed
-                      ? ({ "--block-hue": `${block.hue}` } as React.CSSProperties)
-                      : block.index === elapsedMinutes
-                      ? ({
-                          "--fill": `${(currentSeconds / 60) * 100}%`,
-                        } as React.CSSProperties)
-                      : undefined
-                  }
-                  title={block.time}
-                />
-              ))}
+              {Array.from({ length: row.count }, (_, i) => {
+                const index = row.firstIndex + i;
+                const isElapsed = index < elapsedMinutes;
+                const isCurrent = index === currentIndex;
+                return (
+                  <div
+                    key={i}
+                    className={`block${isElapsed ? " block-elapsed" : isCurrent ? " block-current" : ""}`}
+                    style={
+                      isCurrent
+                        ? ({ "--fill": `${(currentSeconds / 60) * 100}%` } as React.CSSProperties)
+                        : isElapsed
+                          ? ({ "--k": index / Math.max(1, total - 1) } as React.CSSProperties)
+                          : undefined
+                    }
+                    title={minutesToTime(row.startMinute + i)}
+                  />
+                );
+              })}
             </div>
-            <span className="block-row-label block-row-label-right">
-              {row.endLabel}
-            </span>
           </div>
-        </>
+        </Fragment>
       ))}
     </div>
   );

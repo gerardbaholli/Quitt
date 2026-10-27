@@ -1,37 +1,31 @@
 import { useState, useEffect, useCallback } from "react";
 import {
+  type Countdown,
   type WorkSchedule,
   type WorkPhase,
+  DEFAULT_SCHEDULE,
   loadSchedule,
   saveSchedule,
-  getTotalWorkMinutes,
   getElapsedWorkMinutes,
-  getRemainingWorkMinutes,
   getCurrentPhase,
-  getMinutesUntilLunch,
-  getMinutesUntilEnd,
-  getElapsedLunchMinutes,
-  getLunchDuration,
+  getCountdown,
 } from "../utils/timeUtils";
 
 export interface WorkTimeState {
   schedule: WorkSchedule;
-  totalMinutes: number;
+  /** False until the user saves a schedule for the first time */
+  isConfigured: boolean;
   elapsedMinutes: number;
-  remainingMinutes: number;
   phase: WorkPhase;
-  percentage: number;
-  minutesUntilLunch: number;
-  minutesUntilEnd: number;
-  elapsedLunchMinutes: number;
-  lunchDuration: number;
+  countdown: Countdown | null;
   currentSeconds: number;
   updateSchedule: (schedule: WorkSchedule) => void;
 }
 
 export function useWorkTime(): WorkTimeState {
-  const [schedule, setSchedule] = useState<WorkSchedule>(loadSchedule);
+  const [saved, setSaved] = useState(loadSchedule);
   const [now, setNow] = useState(() => new Date());
+  const schedule = saved ?? DEFAULT_SCHEDULE;
 
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000);
@@ -39,32 +33,16 @@ export function useWorkTime(): WorkTimeState {
   }, []);
 
   const updateSchedule = useCallback((newSchedule: WorkSchedule) => {
-    setSchedule(newSchedule);
+    setSaved(newSchedule);
     saveSchedule(newSchedule);
   }, []);
 
-  const totalMinutes = getTotalWorkMinutes(schedule);
-  const elapsedMinutes = getElapsedWorkMinutes(now, schedule);
-  const remainingMinutes = getRemainingWorkMinutes(now, schedule);
-  const phase = getCurrentPhase(now, schedule);
-  const percentage =
-    totalMinutes > 0 ? Math.min(100, (elapsedMinutes / totalMinutes) * 100) : 0;
-  const minutesUntilLunch = getMinutesUntilLunch(now, schedule);
-  const minutesUntilEnd = getMinutesUntilEnd(now, schedule);
-  const elapsedLunchMinutes = getElapsedLunchMinutes(now, schedule);
-  const lunchDuration = getLunchDuration(schedule);
-
   return {
     schedule,
-    totalMinutes,
-    elapsedMinutes,
-    remainingMinutes,
-    phase,
-    percentage,
-    minutesUntilLunch,
-    minutesUntilEnd,
-    elapsedLunchMinutes,
-    lunchDuration,
+    isConfigured: saved !== null,
+    elapsedMinutes: getElapsedWorkMinutes(now, schedule),
+    phase: getCurrentPhase(now, schedule),
+    countdown: getCountdown(now, schedule),
     currentSeconds: now.getSeconds(),
     updateSchedule,
   };

@@ -1,16 +1,154 @@
 :root {
   --font-family: "Roboto Mono", monospace;
-  --bg: #121212;
-  --surface: #1a1a1a;
-  --border: #2a2a2a;
-  --text: #999;
-  --text-strong: #ccc;
-  --accent: #e0e0e0;
-  --elapsed: #555;
-  --lunch: #8a7a5a;
-  --lunch-dim: rgba(138, 122, 90, 0.15);
   --radius: 6px;
   --radius-sm: 3px;
+}
+
+/* Palettes: default is Grafite. Also applied to elements (setup previews), not just <html>. */
+:root,
+[data-palette="grafite"] {
+  color-scheme: dark;
+  --bg: #111214;
+  --surface: #191a1d;
+  --line: #2c2e33;
+  --empty: #24262a;
+  --done: #5b6069;
+  --now: #c3c8d0;
+  --text: #e6e7ea;
+  --muted: #7a7f89;
+}
+
+[data-palette="ardesia"] {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #141a23;
+  --line: #263042;
+  --empty: #1b2230;
+  --done: #3f5274;
+  --now: #93b4ea;
+  --text: #e3e9f3;
+  --muted: #74829a;
+}
+
+[data-palette="salvia"] {
+  color-scheme: dark;
+  --bg: #0e1210;
+  --surface: #141916;
+  --line: #26302a;
+  --empty: #1d2520;
+  --done: #4c6a55;
+  --now: #a3d3ac;
+  --text: #e3ece5;
+  --muted: #76897b;
+}
+
+[data-palette="ambra"] {
+  color-scheme: dark;
+  --bg: #13110e;
+  --surface: #1b1814;
+  --line: #312b22;
+  --empty: #27231c;
+  --done: #7a5e35;
+  --now: #f0b860;
+  --text: #f1e9dc;
+  --muted: #91866f;
+}
+
+[data-palette="prugna"] {
+  color-scheme: dark;
+  --bg: #121016;
+  --surface: #1a1720;
+  --line: #2e2838;
+  --empty: #241f2c;
+  --done: #5e4a73;
+  --now: #c9a8ec;
+  --text: #ece6f3;
+  --muted: #857a92;
+}
+
+/* Giornata: elapsed blocks shift from cool teal to warm orange, see BlockGrid.css */
+[data-palette="giornata"] {
+  color-scheme: dark;
+  --bg: #101114;
+  --surface: #18191d;
+  --line: #2c2e35;
+  --empty: #23252b;
+  --done: #6a7f8f;
+  --now: #ece6dc;
+  --text: #ece9e5;
+  --muted: #7b7f88;
+}
+
+[data-palette="carta"] {
+  color-scheme: light;
+  --bg: #f2f1ee;
+  --surface: #fbfaf8;
+  --line: #d3d1cc;
+  --empty: #dfddd8;
+  --done: #8d9098;
+  --now: #2b2d31;
+  --text: #1d1e21;
+  --muted: #6a6d75;
+}
+
+[data-palette="nebbia"] {
+  color-scheme: light;
+  --bg: #eef1f4;
+  --surface: #f8fafb;
+  --line: #d5dbe2;
+  --empty: #dde3ea;
+  --done: #8796aa;
+  --now: #2f4a6e;
+  --text: #1b2433;
+  --muted: #627085;
+}
+
+[data-palette="foglia"] {
+  color-scheme: light;
+  --bg: #eef2ee;
+  --surface: #f8faf8;
+  --line: #d3dcd4;
+  --empty: #dce5dd;
+  --done: #7f9c86;
+  --now: #2f5a3b;
+  --text: #1a261d;
+  --muted: #5f7365;
+}
+
+[data-palette="sabbia"] {
+  color-scheme: light;
+  --bg: #f4efe7;
+  --surface: #fbf8f3;
+  --line: #e0d7c9;
+  --empty: #e7dfd2;
+  --done: #b39368;
+  --now: #8a5a1c;
+  --text: #2a2117;
+  --muted: #776953;
+}
+
+[data-palette="cipria"] {
+  color-scheme: light;
+  --bg: #f5eef0;
+  --surface: #fcf8f9;
+  --line: #e5d6db;
+  --empty: #ebdfe3;
+  --done: #b98a98;
+  --now: #7d3a52;
+  --text: #2a1a20;
+  --muted: #7d6670;
+}
+
+[data-palette="lavanda"] {
+  color-scheme: light;
+  --bg: #f1eff6;
+  --surface: #faf9fc;
+  --line: #dcd7e7;
+  --empty: #e3dfed;
+  --done: #9a8fb8;
+  --now: #4b3d7a;
+  --text: #1f1b2b;
+  --muted: #6b6580;
 }
 
 *,
@@ -23,7 +161,7 @@ body {
   margin: 0;
   font-family: var(--font-family);
   background: var(--bg);
-  color: var(--text);
+  color: var(--muted);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

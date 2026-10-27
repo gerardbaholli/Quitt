@@ -5,11 +5,9 @@ A minimal workday countdown app that visualizes your remaining work time as a gr
 ## What it does
 
 - Displays your full workday as a grid of 480+ blocks (60 per row = 1 hour per row)
-- Blocks fill in as time passes, giving you a satisfying visual of progress
-- Shows a countdown to lunch break (morning) or end of day (afternoon)
-- Lunch break row is displayed separately with a distinct color
-- Motivational messages change throughout the day
-- Configurable schedule via settings panel (saved in localStorage)
+- Blocks fill in as time passes; the current minute fills second by second
+- Remaining work time shown in the lunch separator and in the browser tab title
+- Configurable schedule via settings panel (validated, saved in localStorage)
 
 ## Default schedule
 
@@ -23,7 +21,7 @@ A minimal workday countdown app that visualizes your remaining work time as a gr
 
 - React + TypeScript
 - Vite
-- Roboto Mono font
+- Roboto Mono font (self-hosted via `@fontsource`)
 - No external UI libraries
 
 ## Getting started
@@ -31,6 +29,7 @@ A minimal workday countdown app that visualizes your remaining work time as a gr
 ```bash
 npm install
 npm run dev
+npm test
 ```
 
 ## Deploy

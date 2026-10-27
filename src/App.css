@@ -1,22 +1,29 @@
-.app {
-  position: relative;
-}
-
-.toolbar-btn {
+.settings-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
-  font-family: var(--font-family);
-  font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.05em;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius);
+  border: none;
+  padding: 0.25rem;
   cursor: pointer;
-  transition: border-color 0.2s;
-  white-space: nowrap;
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
-.toolbar-btn:hover {
-  border-color: var(--text);
+body:hover .settings-btn {
+  opacity: 0.6;
+}
+
+/* Touch screens have no hover: keep the button visible */
+@media (hover: none) {
+  .settings-btn {
+    opacity: 0.6;
+  }
+}
+
+.settings-btn:hover,
+.settings-btn:focus-visible {
+  opacity: 1;
 }

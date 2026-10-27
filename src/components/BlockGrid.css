@@ -95,15 +95,18 @@
   transition: width 1s ease;
 }
 
-/* Phone: each hour row wraps into two half-hour lines of 30 blocks */
+/* Phone: each hour row wraps into two half-hour lines of 30 blocks,
+   all lines evenly spaced (row gap inside an hour = gap between hours) */
 @media (max-width: 600px) {
   .block-grid {
-    gap: 6px;
+    gap: 4px;
     padding: 3rem 0.75rem 1.25rem 0.25rem;
   }
 
   .block-row {
     gap: 6px;
+    /* --lines: 1 or 2 half-hour lines, so every line gets the same height */
+    flex: var(--lines, 2);
   }
 
   .block-row-label {
@@ -113,7 +116,7 @@
 
   .block-row-blocks {
     grid-template-columns: repeat(30, minmax(0, 1fr));
-    gap: 2px;
+    gap: 4px 2px;
   }
 
   .block-timer {

@@ -52,7 +52,7 @@ export function BlockGrid({ schedule, elapsedMinutes, currentIndex, currentSecon
               </div>
             </div>
           )}
-          <div className="block-row">
+          <div className="block-row" style={{ "--lines": row.count > 30 ? 2 : 1 } as React.CSSProperties}>
             <span className="block-row-label">{minutesToTime(row.startMinute)}</span>
             <div className="block-row-blocks">
               {Array.from({ length: row.count }, (_, i) => {

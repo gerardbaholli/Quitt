@@ -1,24 +1,26 @@
 /** Color palettes; the colors themselves live in index.css under [data-palette="<id>"] */
 export const PALETTES = [
-  // dark
-  { id: "grafite", name: "Grafite" },
-  { id: "ardesia", name: "Ardesia" },
-  { id: "salvia", name: "Salvia" },
-  { id: "ambra", name: "Ambra" },
-  { id: "prugna", name: "Prugna" },
-  { id: "giornata", name: "Giornata" },
-  // light
-  { id: "carta", name: "Carta" },
-  { id: "nebbia", name: "Nebbia" },
-  { id: "foglia", name: "Foglia" },
-  { id: "sabbia", name: "Sabbia" },
-  { id: "cipria", name: "Cipria" },
-  { id: "lavanda", name: "Lavanda" },
+  { id: "grafite", name: "Grafite", tone: "dark" },
+  { id: "ardesia", name: "Ardesia", tone: "dark" },
+  { id: "salvia", name: "Salvia", tone: "dark" },
+  { id: "ambra", name: "Ambra", tone: "dark" },
+  { id: "prugna", name: "Prugna", tone: "dark" },
+  { id: "giornata", name: "Giornata", tone: "dark" },
+  { id: "carta", name: "Carta", tone: "light" },
+  { id: "nebbia", name: "Nebbia", tone: "light" },
+  { id: "foglia", name: "Foglia", tone: "light" },
+  { id: "sabbia", name: "Sabbia", tone: "light" },
+  { id: "cipria", name: "Cipria", tone: "light" },
+  { id: "lavanda", name: "Lavanda", tone: "light" },
 ] as const;
 
 export type PaletteId = (typeof PALETTES)[number]["id"];
 
 const STORAGE_KEY = "quitt-palette";
+
+export function getTone(id: PaletteId): "dark" | "light" {
+  return PALETTES.find((p) => p.id === id)!.tone;
+}
 
 export function loadPalette(): PaletteId {
   try {

@@ -14,6 +14,7 @@ import {
 } from "../utils/timeUtils";
 
 export interface WorkTimeState {
+  now: Date;
   schedule: WorkSchedule;
   /** False until the user saves a schedule for the first time */
   isConfigured: boolean;
@@ -22,17 +23,27 @@ export interface WorkTimeState {
   countdown: Countdown | null;
   /** Time left in the current slot (before work, morning, lunch, afternoon) */
   slotCountdown: SlotCountdown | null;
-  currentSeconds: number;
   updateSchedule: (schedule: WorkSchedule) => void;
 }
 
+// Dev only: ?at=2026-10-27T11:27:42 simulates the clock for visual checks (stripped from production builds)
+const CLOCK_OFFSET = import.meta.env.DEV ? simulatedOffset() : 0;
+
+function simulatedOffset(): number {
+  const at = new URLSearchParams(location.search).get("at");
+  const time = at ? new Date(at).getTime() : NaN;
+  return Number.isNaN(time) ? 0 : time - Date.now();
+}
+
+const clock = () => new Date(Date.now() + CLOCK_OFFSET);
+
 export function useWorkTime(): WorkTimeState {
   const [saved, setSaved] = useState(loadSchedule);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(clock);
   const schedule = saved ?? DEFAULT_SCHEDULE;
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
+    const interval = setInterval(() => setNow(clock()), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,13 +53,13 @@ export function useWorkTime(): WorkTimeState {
   }, []);
 
   return {
+    now,
     schedule,
     isConfigured: saved !== null,
     elapsedMinutes: getElapsedWorkMinutes(now, schedule),
     phase: getCurrentPhase(now, schedule),
     countdown: getCountdown(now, schedule),
     slotCountdown: getSlotCountdown(now, schedule),
-    currentSeconds: now.getSeconds(),
     updateSchedule,
   };
 }

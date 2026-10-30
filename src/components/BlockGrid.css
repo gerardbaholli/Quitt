@@ -1,37 +1,35 @@
+/* Morning rows, lunch line and afternoon rows: one continuous mosaic filling the rest of the page */
 .block-grid {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   /* same as the gap between blocks: uniform spacing in both directions */
   gap: 3px;
-  /* Background reaches the screen edges; content stays clear of notch / Dynamic Island / home indicator */
-  padding:
-    max(2rem, env(safe-area-inset-top, 0px))
-    max(2rem, env(safe-area-inset-right, 0px))
-    max(2rem, env(safe-area-inset-bottom, 0px))
-    max(1rem, env(safe-area-inset-left, 0px));
-  overflow: hidden;
 }
 
 .block-row {
   flex: 1;
+  min-height: 0;
   display: flex;
   align-items: stretch;
-  gap: 12px;
 }
 
 .block-row-label {
+  width: var(--label-col);
+  flex-shrink: 0;
+  padding-right: 14px;
   font-size: 0.75rem;
   color: var(--muted);
-  width: 48px;
-  flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   font-weight: 300;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+
+.block-row-label--current {
+  color: var(--text);
 }
 
 .block-row-blocks {
@@ -52,9 +50,9 @@
   background-color: var(--done);
 }
 
-/* --k: block position in the day, 0..1 */
+/* Giornata: --k is the block position in the day, 0..1 */
 [data-palette="giornata"] .block-elapsed {
-  background-color: hsl(calc(195 - var(--k) * 170) calc(32% + var(--k) * 33%) calc(42% + var(--k) * 10%));
+  background-color: color-mix(in srgb, var(--done-end) calc(var(--k) * 100%), var(--done));
 }
 
 /* Current block fills bottom-up second by second */
@@ -62,67 +60,44 @@
   background: linear-gradient(to top, var(--now) var(--fill, 0%), var(--empty) var(--fill, 0%));
 }
 
-/* Timer between morning and afternoon */
-.block-timer {
+/* Lunch: a thin labelled line between morning and afternoon, not blocks */
+.block-lunch {
   flex-shrink: 0;
+  height: 28px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 1rem 0 1rem 60px;
+  gap: 12px;
+  padding-left: var(--label-col);
 }
 
-.block-timer-value {
-  font-size: clamp(2rem, 6vw, 3.6rem);
-  font-weight: 300;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-
-.block-timer-label {
-  font-size: 0.8rem;
-  color: var(--muted);
-  letter-spacing: 0.12em;
+.block-lunch-text {
+  font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
-.block-timer-bar {
-  width: min(320px, 60%);
-  height: 2px;
-  margin-top: 0.5rem;
-  background: var(--empty);
+.block-lunch-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
 }
 
-.block-timer-bar > div {
-  height: 100%;
-  background: var(--now);
-  transition: width 1s ease;
-}
-
-/* Phone: each hour row wraps into two half-hour lines of 30 blocks,
-   spaced like the blocks themselves */
+/* Phone: each hour row wraps into two half-hour lines of 30 blocks */
 @media (max-width: 600px) {
   .block-grid {
     gap: 2px;
-    /* top: room for the settings button below the status bar */
-    padding:
-      calc(3rem + env(safe-area-inset-top, 0px))
-      max(0.75rem, env(safe-area-inset-right, 0px))
-      max(1.25rem, env(safe-area-inset-bottom, 0px))
-      max(0.25rem, env(safe-area-inset-left, 0px));
   }
 
   .block-row {
-    gap: 6px;
     /* --lines: 1 or 2 half-hour lines, so every line gets the same height */
     flex: var(--lines, 2);
   }
 
   .block-row-label {
     font-size: 0.6rem;
-    width: 34px;
+    padding-right: 6px;
   }
 
   .block-row-blocks {
@@ -130,15 +105,11 @@
     gap: 2px;
   }
 
-  .block-timer {
-    padding: 0.75rem 0 0.75rem 40px;
+  .block-lunch {
+    height: 20px;
   }
 
-  .block-timer-label {
-    font-size: 0.65rem;
-  }
-
-  .block-timer-bar {
-    width: 70%;
+  .block-lunch-text {
+    font-size: 10px;
   }
 }

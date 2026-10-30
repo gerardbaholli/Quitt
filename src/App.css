@@ -1,30 +1,87 @@
-.settings-btn {
+/* Whole screen, never scrolls: header, progress bar, grid.
+   Background reaches the screen edges; content stays inside the iPhone safe area. */
+.page {
+  --label-col: 64px;
   position: fixed;
-  /* below the status bar and clear of the notch in landscape */
-  top: calc(1rem + env(safe-area-inset-top, 0px));
-  right: calc(1rem + env(safe-area-inset-right, 0px));
-  z-index: 10;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding:
+    max(32px, env(safe-area-inset-top, 0px))
+    max(48px, env(safe-area-inset-right, 0px))
+    max(36px, env(safe-area-inset-bottom, 0px))
+    max(48px, env(safe-area-inset-left, 0px));
+}
+
+.page--day-off .block-grid {
+  opacity: 0.5;
+}
+
+.settings-btn {
+  position: absolute;
+  top: calc(24px + env(safe-area-inset-top, 0px));
+  right: calc(36px + env(safe-area-inset-right, 0px));
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
   background: transparent;
   border: none;
-  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
   cursor: pointer;
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.2s;
 }
 
-body:hover .settings-btn {
-  opacity: 0.6;
+.settings-btn:hover {
+  color: var(--text);
 }
 
-/* Touch screens have no hover: keep the button visible */
-@media (hover: none) {
-  .settings-btn {
-    opacity: 0.6;
-  }
-}
-
-.settings-btn:hover,
 .settings-btn:focus-visible {
-  opacity: 1;
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.progress {
+  position: relative;
+  flex-shrink: 0;
+  height: 2px;
+  margin: 0 0 20px var(--label-col);
+  background: var(--empty);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--now);
+  transition: width 1s ease;
+}
+
+.progress-tick {
+  position: absolute;
+  top: -3px;
+  width: 1px;
+  height: 8px;
+  background: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .page {
+    --label-col: 40px;
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 6px)
+      max(16px, env(safe-area-inset-right, 0px))
+      calc(env(safe-area-inset-bottom, 0px) + 8px)
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .settings-btn {
+    top: calc(env(safe-area-inset-top, 0px) + 2px);
+    right: max(6px, env(safe-area-inset-right, 0px));
+  }
+
+  .progress {
+    margin-bottom: 14px;
+  }
 }

@@ -6,8 +6,8 @@ A minimal workday countdown app that visualizes your remaining work time as a gr
 
 - Displays your full workday as a grid of 480+ blocks (60 per row = 1 hour per row)
 - Blocks fill in as time passes; the current minute fills second by second
-- Remaining work time shown in the lunch separator and in the browser tab title
-- Configurable schedule via settings panel (validated, saved in localStorage)
+- Big countdown at the top (to start, to lunch, to end of day) with the day's three slots, plus the current slot in the browser tab title
+- Settings: start, lunch time and length, end of day, working days and 12 color palettes (validated, saved in localStorage)
 
 ## Default schedule
 

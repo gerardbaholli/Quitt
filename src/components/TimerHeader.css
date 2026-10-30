@@ -1,0 +1,153 @@
+/* Top band: timer on the left (aligned with the blocks), the day's three slots on the right */
+.head {
+  flex-shrink: 0;
+  height: clamp(168px, 15.3vw, 220px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 0 22px var(--label-col);
+}
+
+.head-timer {
+  min-width: 0;
+}
+
+.head-label {
+  margin: 0 0 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  color: var(--muted);
+}
+
+.head-value {
+  margin: 0;
+  line-height: 1;
+  font-weight: 300;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.head-hm {
+  font-size: clamp(68px, 10.28vw, 148px);
+  letter-spacing: -0.03em;
+}
+
+.head-ss {
+  font-size: clamp(32px, 4.17vw, 60px);
+  color: var(--muted);
+}
+
+/* "Giornata finita" / "Giorno libero" in place of the timer */
+.head-word {
+  font-size: clamp(34px, 4.44vw, 64px);
+}
+
+.head-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.phase {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.phase-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  border: 1px solid var(--muted);
+}
+
+.phase--past .phase-mark {
+  background: var(--done);
+  border-color: var(--done);
+}
+
+.phase--current .phase-mark {
+  background: var(--now);
+  border-color: var(--now);
+}
+
+.phase--current .phase-name {
+  color: var(--text);
+}
+
+.phase-range {
+  font-variant-numeric: tabular-nums;
+}
+
+.phase-range--short {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .head {
+    /* grows when the note adds a line, so nothing is pushed above the screen */
+    height: auto;
+    min-height: 168px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 14px;
+    padding-bottom: 16px;
+  }
+
+  .head-label {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+
+  .head-hm {
+    font-size: 68px;
+  }
+
+  .head-ss {
+    font-size: 32px;
+  }
+
+  .head-word {
+    font-size: 34px;
+  }
+
+  .head-note {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .phases {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    font-size: 10px;
+  }
+
+  .phase {
+    gap: 6px;
+  }
+
+  .phase-range--long {
+    display: none;
+  }
+
+  .phase-range--short {
+    display: inline;
+  }
+}

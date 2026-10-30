@@ -1,24 +1,42 @@
+/* ---------- container: centered dialog on desktop, full-screen sheet below 900px ---------- */
 .setup {
+  padding: 0;
+  width: min(860px, calc(100% - 32px));
+  max-width: none;
+  max-height: min(840px, calc(100% - 32px));
   background: var(--surface);
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 1.5rem;
-  width: min(440px, calc(100% - 2rem));
-  max-height: calc(100% - 2rem);
   font-family: var(--font-family);
 }
 
+.setup[open] {
+  display: flex;
+  flex-direction: column;
+}
+
 .setup::backdrop {
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--backdrop, rgba(0, 0, 0, 0.62));
+}
+
+.setup-form {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.setup-head {
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--line);
 }
 
 .setup h2 {
-  margin: 0 0 1.25rem;
-  font-size: 0.75rem;
+  margin: 0;
+  font-size: 17px;
   font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  color: var(--text);
 }
 
 /* Focused only programmatically on open (tabindex -1): no ring needed */
@@ -26,42 +44,202 @@
   outline: none;
 }
 
-.setup-fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+.setup-sub {
+  margin: 6px 0 0;
+  font-size: 12px;
 }
 
-.setup-fields label {
+.setup-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.setup-col {
+  min-width: 0;
+  padding: 24px 28px;
+}
+
+.setup-col + .setup-col {
+  border-left: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 300;
+  gap: 28px;
 }
 
-/* Native look off: iOS gives time and number inputs different sizes and alignment */
+.setup h3 {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--muted);
+}
+
+.setup-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.setup-hint {
+  font-size: 11px;
+}
+
+/* ---------- "Giornata": timeline in the order of the day ---------- */
+.tl-row {
+  --mid: 26px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  grid-template-rows: 52px auto;
+  column-gap: 12px;
+  align-items: center;
+}
+
+.tl-row--segment {
+  --mid: 14px;
+  grid-template-rows: 28px;
+}
+
+.tl-label {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.tl-segment {
+  grid-column: 2 / -1;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tl-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tl-unit {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.tl-output {
+  font-size: 16px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl-error {
+  grid-column: 2 / -1;
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.tl-total {
+  margin: 18px 0 0 32px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* Rail: 3px "done" for work, 1px "line" for the break; spans the field row and its error line */
+.tl-rail {
+  grid-row: 1 / -1;
+  align-self: stretch;
+  position: relative;
+}
+
+.tl-rail::before,
+.tl-rail::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tl-rail::before {
+  top: 0;
+  height: var(--mid);
+}
+
+.tl-rail::after {
+  top: var(--mid);
+  bottom: 0;
+}
+
+.tl-rail[data-top="work"]::before,
+.tl-rail[data-bottom="work"]::after {
+  width: 3px;
+  background: var(--done);
+}
+
+.tl-rail[data-top="break"]::before,
+.tl-rail[data-bottom="break"]::after {
+  width: 1px;
+  background: var(--line);
+}
+
+.tl-mark {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--mid) - 5px);
+  left: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+}
+
+.tl-mark--fill {
+  background: var(--now);
+}
+
+.tl-mark--hollow {
+  background: var(--surface);
+  border: 1.5px solid var(--muted);
+}
+
+.tl-mark--error {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ---------- inputs: native look off so iOS gives them all the same size ---------- */
 .setup input[type="time"],
 .setup input[type="number"] {
   appearance: none;
   -webkit-appearance: none;
   display: block;
-  width: 100%;
-  min-width: 0;
-  height: 2.75rem;
+  width: 124px;
+  height: 44px;
   margin: 0;
-  padding: 0 0.75rem;
+  padding: 0 12px;
   background: var(--bg);
   border: 1px solid var(--line);
-  color: var(--text);
   border-radius: var(--radius-sm);
+  color: var(--text);
   /* 16px: below this iOS zooms the page when the field gets focus */
-  font-size: 1rem;
+  font-size: 16px;
   font-family: var(--font-family);
+  font-variant-numeric: tabular-nums;
   text-align: left;
-  /* = inner height (height minus borders): centers the value vertically on iOS,
-     whose time value box otherwise sits at the top of the field */
-  line-height: calc(2.75rem - 2px);
+  /* = inner height: centers the value vertically on iOS, whose time value box otherwise sits at the top */
+  line-height: 42px;
+}
+
+.setup input.tl-input-short {
+  width: 84px;
+}
+
+.setup input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.setup input:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
 }
 
 .setup input::-webkit-date-and-time-value {
@@ -76,162 +254,226 @@
   margin: 0;
 }
 
-.setup fieldset {
-  border: none;
-  margin: 1.5rem 0 0;
+/* ---------- working days ---------- */
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.day {
+  height: 44px;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.setup legend {
-  font-size: 0.75rem;
-  font-weight: 300;
-  margin-bottom: 0.5rem;
-  padding: 0;
-}
-
-/* Visually hidden but still focusable input: the label is the control */
-.setup-day input,
-.setup-palette input {
-  position: absolute;
-  opacity: 0;
-  inset: 0;
-  margin: 0;
-  cursor: pointer;
-}
-
-.setup-day {
-  position: relative;
-  flex: 1;
-  text-align: center;
-  font-size: 0.8rem;
-  padding: 0.5rem 0;
+  background: transparent;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-family: var(--font-family);
+  font-size: 13px;
   cursor: pointer;
-  user-select: none;
 }
 
-.setup-day:has(input:checked) {
-  background: var(--done);
-  border-color: var(--done);
-  color: var(--text);
+.day[aria-pressed="true"] {
+  background: var(--now);
+  border-color: var(--now);
+  color: var(--bg);
 }
 
-/* --selected is resolved here, in the dialog's palette, before each preview overrides the tokens */
-.setup .setup-palettes {
+.days-summary {
+  margin: 10px 0 0;
+  font-size: 12px;
+}
+
+.setup-section .tl-error {
+  margin-top: 8px;
+}
+
+/* ---------- palettes: each preview drawn in its own colors ---------- */
+.setup-colors {
   --selected: var(--text);
+}
+
+.palette-group + .palette-group {
+  margin-top: 14px;
+}
+
+.palette-group-label {
+  margin: 0 0 8px;
+  font-size: 11px;
+}
+
+.palette-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
+  gap: 8px;
 }
 
-/* One line per chip so every chip has the same size */
-.setup-palette-name {
+.palette {
+  height: 56px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-family);
+  cursor: pointer;
+  text-align: left;
+}
+
+.palette[aria-pressed="true"] {
+  outline: 2px solid var(--selected);
+  outline-offset: 2px;
+}
+
+.palette:focus-visible {
+  outline: 2px dashed var(--selected);
+  outline-offset: 4px;
+}
+
+.palette-mosaic {
+  display: flex;
+  gap: 2px;
+}
+
+.palette-mosaic i {
+  width: 6px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--empty);
+}
+
+.palette-mosaic .m-done {
+  background: var(--done);
+}
+
+.palette[data-palette="giornata"] .m-done-late {
+  background: var(--done-end);
+}
+
+.palette-mosaic .m-now {
+  background: linear-gradient(to top, var(--now) 55%, var(--empty) 55%);
+}
+
+.palette-name {
+  font-size: 11px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.setup-palette {
-  position: relative;
+/* ---------- footer ---------- */
+.setup-foot {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-  padding: 0.55rem 0.6rem;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  cursor: pointer;
-  user-select: none;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--line);
 }
 
-.setup-palette:has(input:checked) {
-  outline: 2px solid var(--selected);
-  outline-offset: 1px;
+.setup-status {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
 }
 
-.setup-palette-dots {
-  display: flex;
-  flex-shrink: 0;
-}
-
-.setup-palette-dots i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.setup-palette-dots .dot-done {
-  background: var(--done);
-}
-
-.setup-palette[data-palette="giornata"] .dot-done {
-  background: linear-gradient(90deg, hsl(195 32% 42%), hsl(25 65% 52%));
-}
-
-.setup-palette-dots .dot-now {
-  background: var(--now);
-  margin-left: -4px;
-}
-
-.setup-day:has(input:focus-visible),
-.setup-palette:has(input:focus-visible) {
-  outline: 2px solid var(--selected, var(--text));
-  outline-offset: 2px;
-}
-
-.setup-error {
-  margin: 1rem 0 0;
-  font-size: 0.75rem;
-  color: #b43c3c;
+.setup-status--error {
+  color: var(--danger);
 }
 
 .setup-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
+  gap: 8px;
 }
 
-.setup-btn {
+.btn {
+  height: 44px;
+  padding: 0 20px;
   background: transparent;
   border: 1px solid var(--line);
-  color: var(--muted);
-  font-family: var(--font-family);
-  font-size: 0.8rem;
-  padding: 0.5rem 1rem;
   border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-family);
+  font-size: 14px;
   cursor: pointer;
 }
 
-.setup-btn:hover {
-  border-color: var(--muted);
-}
-
-.setup-btn--primary {
-  background: var(--text);
-  border-color: var(--text);
+.btn--primary {
+  background: var(--now);
+  border-color: var(--now);
   color: var(--bg);
 }
 
-.setup-btn:disabled {
+.btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
+.day:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+/* ---------- narrow screens: full-screen sheet, one column, body scrolls, footer stays ---------- */
+@media (max-width: 899px) {
   .setup {
-    padding: 1.25rem;
+    inset: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border: none;
+    border-radius: 0;
+    padding:
+      env(safe-area-inset-top, 0px)
+      env(safe-area-inset-right, 0px)
+      env(safe-area-inset-bottom, 0px)
+      env(safe-area-inset-left, 0px);
   }
 
-  .setup .setup-palettes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .setup-head {
+    padding: 18px 16px 14px;
+  }
+
+  .setup-body {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-col {
+    padding: 20px 16px;
+  }
+
+  .setup-col + .setup-col {
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
+
+  .tl-row {
+    --mid: 25px;
+    grid-template-rows: 50px auto;
+  }
+
+  .tl-row--segment {
+    --mid: 14px;
+    grid-template-rows: 28px;
+  }
+
+  .setup-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 16px 16px;
+  }
+
+  .setup-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
   }
 }

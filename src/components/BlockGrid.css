@@ -6,7 +6,12 @@
   flex-direction: column;
   /* same as the gap between blocks: uniform spacing in both directions */
   gap: 3px;
-  padding: 2rem 2rem 2rem 1rem;
+  /* Background reaches the screen edges; content stays clear of notch / Dynamic Island / home indicator */
+  padding:
+    max(2rem, env(safe-area-inset-top, 0px))
+    max(2rem, env(safe-area-inset-right, 0px))
+    max(2rem, env(safe-area-inset-bottom, 0px))
+    max(1rem, env(safe-area-inset-left, 0px));
   overflow: hidden;
 }
 
@@ -101,7 +106,12 @@
 @media (max-width: 600px) {
   .block-grid {
     gap: 2px;
-    padding: 3rem 0.75rem 1.25rem 0.25rem;
+    /* top: room for the settings button below the status bar */
+    padding:
+      calc(3rem + env(safe-area-inset-top, 0px))
+      max(0.75rem, env(safe-area-inset-right, 0px))
+      max(1.25rem, env(safe-area-inset-bottom, 0px))
+      max(0.25rem, env(safe-area-inset-left, 0px));
   }
 
   .block-row {

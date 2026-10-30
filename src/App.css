@@ -1,7 +1,8 @@
 .settings-btn {
   position: fixed;
-  top: 1rem;
-  right: 1rem;
+  /* below the status bar and clear of the notch in landscape */
+  top: calc(1rem + env(safe-area-inset-top, 0px));
+  right: calc(1rem + env(safe-area-inset-right, 0px));
   z-index: 10;
   background: transparent;
   border: none;

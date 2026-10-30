@@ -157,10 +157,15 @@
   box-sizing: border-box;
 }
 
+/* html too: Safari paints overscroll and its bars from the page background */
+html,
+body {
+  background: var(--bg);
+}
+
 body {
   margin: 0;
   font-family: var(--font-family);
-  background: var(--bg);
   color: var(--muted);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

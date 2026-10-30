@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useWorkTime } from "./hooks/useWorkTime";
 import { BlockGrid } from "./components/BlockGrid";
 import { SetupScreen } from "./components/SetupScreen";
@@ -34,18 +34,36 @@ function App() {
     useWorkTime();
   const [setupOpen, setSetupOpen] = useState(!isConfigured);
   const [palette, setPalette] = useState(loadPalette);
+  const paletteAtOpen = useRef(palette);
   const timer = getTimer(phase, countdown);
   const isWorking = phase === "morning" || phase === "afternoon";
 
   // Layout effect: apply before paint so the saved palette shows without a flash
   useLayoutEffect(() => {
-    document.documentElement.dataset.palette = palette;
+    const root = document.documentElement;
+    root.dataset.palette = palette;
+    // Status bar / toolbar tint follows the palette background
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", getComputedStyle(root).getPropertyValue("--bg").trim());
   }, [palette]);
 
   const title = getTitle(slotCountdown);
   useEffect(() => {
     document.title = title;
   }, [title]);
+
+  const openSetup = () => {
+    paletteAtOpen.current = palette;
+    setSetupOpen(true);
+  };
+
+  const closeSetup = () => {
+    setSetupOpen(false);
+    // Safari 26 reads its bar / safe-area color only on page load: reload so it picks up the new palette.
+    // Schedule and palette are already saved at this point.
+    if (palette !== paletteAtOpen.current) location.reload();
+  };
 
   return (
     <>
@@ -57,7 +75,7 @@ function App() {
         timerValue={timer.value}
         timerLabel={timer.label}
       />
-      <button className="settings-btn" onClick={() => setSetupOpen(true)}>
+      <button className="settings-btn" onClick={openSetup}>
         <img src={settingsIcon} alt="Impostazioni" width={24} height={24} />
       </button>
       {setupOpen && (
@@ -70,9 +88,9 @@ function App() {
           }}
           onSave={(s) => {
             updateSchedule(s);
-            setSetupOpen(false);
+            closeSetup();
           }}
-          onClose={isConfigured ? () => setSetupOpen(false) : undefined}
+          onClose={isConfigured ? closeSetup : undefined}
         />
       )}
     </>

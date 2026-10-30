@@ -29,7 +29,11 @@ export function SetupScreen({ schedule, palette, onPaletteChange, onSave, onClos
   const valid = isValidSchedule(form);
 
   useEffect(() => {
-    dialogRef.current?.showModal();
+    const dialog = dialogRef.current;
+    // Initial focus on the title instead of the first time field: on iOS focusing it opens the time picker.
+    // Native attribute (React's autoFocus isn't rendered to the DOM, so showModal() wouldn't see it).
+    dialog?.querySelector("h2")?.setAttribute("autofocus", "");
+    dialog?.showModal();
   }, []);
 
   const set = (patch: Partial<WorkSchedule>) => setForm({ ...form, ...patch });
@@ -57,7 +61,9 @@ export function SetupScreen({ schedule, palette, onPaletteChange, onSave, onClos
           if (valid) onSave(form);
         }}
       >
-        <h2 id="setup-title">Orario lavorativo</h2>
+        <h2 id="setup-title" tabIndex={-1}>
+          Orario lavorativo
+        </h2>
 
         <div className="setup-fields">
           <label>

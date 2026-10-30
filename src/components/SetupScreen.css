@@ -21,6 +21,11 @@
   letter-spacing: 0.1em;
 }
 
+/* Focused only programmatically on open (tabindex -1): no ring needed */
+.setup h2:focus {
+  outline: none;
+}
+
 .setup-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -35,16 +40,40 @@
   font-weight: 300;
 }
 
+/* Native look off: iOS gives time and number inputs different sizes and alignment */
 .setup input[type="time"],
 .setup input[type="number"] {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 2.75rem;
+  margin: 0;
+  padding: 0 0.75rem;
   background: var(--bg);
   border: 1px solid var(--line);
   color: var(--text);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.6rem;
-  font-size: 0.95rem;
+  /* 16px: below this iOS zooms the page when the field gets focus */
+  font-size: 1rem;
   font-family: var(--font-family);
-  width: 100%;
+  text-align: left;
+  /* = inner height (height minus borders): centers the value vertically on iOS,
+     whose time value box otherwise sits at the top of the field */
+  line-height: calc(2.75rem - 2px);
+}
+
+.setup input::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+  line-height: inherit;
+}
+
+.setup input::-webkit-inner-spin-button,
+.setup input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .setup fieldset {
